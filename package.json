@@ -1,0 +1,14 @@
+{
+  "name": "lruj",
+  "version": "1.0.0",
+  "description": "Basic Least Recently Used cache in Javascript",
+  "main": "lru.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "author": "jazzytomato",
+  "license": "MIT",
+  "devDependencies": {
+    "jest": "^23.6.0"
+  }
+}
