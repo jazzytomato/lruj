@@ -60,13 +60,14 @@ function LRU(maxSize) {
 }
 
 LRU.prototype.set = function(key, value) {
-  if (key === undefined) {
+  if (key === undefined || value === undefined) {
     return;
   }
 
   if (this.data[key]) {
       this.data[key].value = value;
-      this.ll.moveToFirst(this.data[key])
+      // Not sure if we should move to first when updating an existing cache value
+      this.ll.moveToFirst(this.data[key]);
   } else {
     let node = {value, key};
     this.data[key] = node;
