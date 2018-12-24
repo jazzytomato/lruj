@@ -1,16 +1,17 @@
 // Simple doubly linked list with just what we need
 // Add
-//  |  first                        last
-//  |   __            __            __
-//  V  |  | --next-> |  | --next-> |  |
-//     |__| <-prev-- |__| <-prev-- |__|
+//  |  first                                     last
+//  |   __            __            __            __
+//  V  |  | --next-> |  | --next-> |  | --next-> |  |
+//     |__| <-prev-- |__| <-prev-- |__| <-prev-- |__|
 
-function ll() {
+function LL() {
   this.first = null;
   this.last = null;
+  this.size = 0;
 }
 
-ll.prototype.add = function(node) {
+LL.prototype.add = function(node) {
   node.next = this.first;
   node.prev = null;
 
@@ -21,37 +22,48 @@ ll.prototype.add = function(node) {
   }
 
   this.first = node;
+  this.size++;
   return node;
 }
 
-ll.prototype.moveToFirst = function(node) {
-  if (this.first === node) {
+LL.prototype.remove = function(node) {
+  if (node.next !== null) {
+    node.next.prev = node.prev;
+  } else {
+    this.last = node.prev;
+  }
+
+  if (node.prev !== null) {
+    node.prev.next = node.next;    
+  } else {
+    this.first = node.next;
+  }
+  this.size--;
+}
+
+LL.prototype.moveToFirst = function(node) {
+  this.remove(node);
+  this.add(node);
+}
+
+LL.prototype.removeLast = function() {
+  if (this.size === 0) {
     return;
   }
-
-  node.prev = null;
-  this.first.prev = node;
-  this.first = node
+  this.remove(this.last);
 }
 
-ll.prototype.removeLast = function() {
-  if (this.first === this.last) {
-    this.first = null;
-    this.last = null
-  } else {
-    this.last = this.last.prev;
-    this.last.next = null;
-  }
-}
-
-function lru(maxSize) {
-    this.size = 0;
+function LRU(maxSize) {
     this.data = {};
-    this.ll = new ll();
+    this.ll = new LL();
     this.maxSize = maxSize;
 }
 
-lru.prototype.set = function(key, value) {
+LRU.prototype.set = function(key, value) {
+  if (key === undefined) {
+    return;
+  }
+
   if (this.data[key]) {
       this.data[key].value = value;
       this.ll.moveToFirst(this.data[key])
@@ -59,18 +71,15 @@ lru.prototype.set = function(key, value) {
     let node = {value, key};
     this.data[key] = node;
 
-    if (this.size >= this.maxSize) {
+    if (this.ll.size >= this.maxSize) {
       delete this.data[this.ll.last.key];
       this.ll.removeLast();
     }
     this.ll.add(node);
   }
-  if (this.size < this.maxSize) {
-    this.size++;
-  }
 };
 
-lru.prototype.get = function(key, getDataFn) {
+LRU.prototype.get = function(key, getDataFn) {
   if (this.data[key]) {
       const node = this.data[key];
       this.ll.moveToFirst(node);
@@ -82,4 +91,4 @@ lru.prototype.get = function(key, getDataFn) {
   }
 };
 
-module.exports = lru;
+module.exports = LRU;
